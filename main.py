@@ -48,9 +48,27 @@ async def shutdown(bot: Bot, dp: Dispatcher):
     except Exception as e:
         logger.error(f"Error during shutdown: {e}")
 
+async def run_health_check():
+    """سيرفر بسيط لإبقاء الخدمة تعمل على Render (Free Tier)"""
+    from aiohttp import web
+    import os
+    app = web.Application()
+    app.router.add_get('/', lambda r: web.Response(text="Bot is running!"))
+    runner = web.AppRunner(app)
+    await runner.setup()
+    port = int(os.getenv("PORT", 10000))
+    site = web.TCPSite(runner, '0.0.0.0', port)
+    await site.start()
+    logger.info(f"Health check server started on port {port}")
+
 async def main():
     """الدالة الرئيسية لتشغيل البوت v2.3 REBORN"""
     global bot_instance
+    
+    # Start health check server for Render Free Tier
+    import os
+    if os.getenv("RENDER"):
+        await run_health_check()
     
     # التحقق من وجود التوكن (H-06)
     if not BOT_TOKEN:
