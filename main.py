@@ -61,7 +61,18 @@ async def main():
     await db_manager.init_db()
     
     # تهيئة البوت والـ Dispatcher
-    bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
+    # Fixed: Support for Proxy (for restricted environments like PythonAnywhere)
+    from os import getenv
+    PROXY_URL = getenv("PROXY_URL")
+    
+    if PROXY_URL:
+        from aiogram.client.session.aiohttp import AiohttpSession
+        session = AiohttpSession(proxy=PROXY_URL)
+        bot = Bot(token=BOT_TOKEN, session=session, default=DefaultBotProperties(parse_mode="HTML"))
+        logger.info(f"Using Proxy: {PROXY_URL}")
+    else:
+        bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
+        
     bot_instance = bot
     dp = Dispatcher(storage=MemoryStorage())
 
