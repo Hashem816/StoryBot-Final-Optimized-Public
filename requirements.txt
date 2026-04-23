@@ -1,0 +1,7 @@
+aiogram>=3.0
+python-dotenv
+requests
+aiohttp>=3.8.0
+aiosqlite
+gunicorn
+decimal
