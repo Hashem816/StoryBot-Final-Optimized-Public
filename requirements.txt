@@ -4,4 +4,4 @@ requests
 aiohttp>=3.8.0
 aiosqlite
 gunicorn
-decimal
+# decimal is a built-in library
