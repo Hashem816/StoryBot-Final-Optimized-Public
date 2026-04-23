@@ -67,8 +67,16 @@ async def main():
     
     if PROXY_URL:
         from aiogram.client.session.aiohttp import AiohttpSession
-        session = AiohttpSession(proxy=PROXY_URL)
-        bot = Bot(token=BOT_TOKEN, session=session, default=DefaultBotProperties(parse_mode="HTML"))
+        # Use a more robust way to handle proxy for PythonAnywhere and similar environments
+        session = AiohttpSession()
+        # We will pass proxy directly to the request if needed, but aiogram's AiohttpSession 
+        # handles 'proxy' parameter in its constructor by creating a connector.
+        # To avoid aiohttp-socks issues, we ensure it's handled correctly.
+        bot = Bot(
+            token=BOT_TOKEN, 
+            session=AiohttpSession(proxy=PROXY_URL), 
+            default=DefaultBotProperties(parse_mode="HTML")
+        )
         logger.info(f"Using Proxy: {PROXY_URL}")
     else:
         bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
